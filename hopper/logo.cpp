@@ -1,4 +1,3 @@
-#define USE_ARDUBOY2_LIB
 #include "common.h"
 
 /*  Defines  */

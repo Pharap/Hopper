@@ -1,4 +1,3 @@
-#define USE_ARDUBOY2_LIB
 #include "MyArduboy.h"
 
 PROGMEM static const uint32_t imgFont[] = {
@@ -15,6 +14,12 @@ PROGMEM static const uint32_t imgFont[] = {
 #ifdef USE_ARDUBOY2_LIB
 
 #define myAudio     audio
+
+MyArduboy::MyArduboy(void)
+{
+    pTunes = new ArduboyPlaytune(myAudio.enabled);
+    pTunes->initChannel(PIN_SPEAKER_1);
+}
 
 void MyArduboy::beginNoLogo(void)
 {
@@ -70,6 +75,7 @@ void MyArduboy::beginNoLogo(void)
             idle(); // infinite loop
         }
     }
+    pTunes->initChannel(PIN_SPEAKER_1);
     pinMode(PIN_SPEAKER_2, OUTPUT); // trick
     myAudio.begin();
 }
@@ -303,9 +309,15 @@ void MyArduboy::saveAudioOnOff(void)
 void MyArduboy::playScore2(const byte *score, uint8_t priority)
 {
     if (!isAudioEnabled()) return;
+    if (pTunes->playing()) {
+        if (priority > playScorePriority) return;
+        pTunes->stopScore();
+    }
     playScorePriority = priority;
+    pTunes->playScore(score);
 }
 
 void MyArduboy::stopScore2(void)
 {
+    pTunes->stopScore();
 }
